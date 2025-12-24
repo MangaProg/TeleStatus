@@ -1,0 +1,17 @@
+# Ambiente virtual
+venv/
+
+# Ficheiros python compilados
+__pycache__/
+*.pyc
+
+# configurações do vscode
+.vscode/
+
+# ficheiros temporários
+*.log
+*.tmp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
