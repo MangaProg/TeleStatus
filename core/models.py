@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -14,7 +14,7 @@ class Area(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, nullable=False)
 
-    lojas = relationship("Loja", back_populates="area")
+    lojas = relationship("Loja", back_populates="area", cascade="all, delete")
 
 
 # ---------------------------------------------------------
@@ -25,11 +25,11 @@ class Loja(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, nullable=False)
-    area_id = Column(Integer, ForeignKey("areas.id"))
+    area_id = Column(Integer, ForeignKey("areas.id", ondelete="SET NULL"))
 
     area = relationship("Area", back_populates="lojas")
-    lojistas = relationship("Lojista", back_populates="loja")
-    registos = relationship("Registo", back_populates="loja")
+    lojistas = relationship("Lojista", back_populates="loja", cascade="all, delete")
+    registos = relationship("Registo", back_populates="loja", cascade="all, delete")
 
 
 # ---------------------------------------------------------
@@ -41,10 +41,10 @@ class Lojista(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, nullable=False)
     telegram_id = Column(String, unique=True, nullable=False)
-    loja_id = Column(Integer, ForeignKey("lojas.id"))
+    loja_id = Column(Integer, ForeignKey("lojas.id", ondelete="CASCADE"))
 
     loja = relationship("Loja", back_populates="lojistas")
-    registos = relationship("Registo", back_populates="lojista")
+    registos = relationship("Registo", back_populates="lojista", cascade="all, delete")
 
 
 # ---------------------------------------------------------
@@ -55,9 +55,9 @@ class Familia(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, nullable=False)
-    emoji = Column(String, nullable=True)  # NOVO CAMPO
+    emoji = Column(String, nullable=True)
 
-    produtos = relationship("Produto", back_populates="familia")
+    produtos = relationship("Produto", back_populates="familia", cascade="all, delete")
 
 
 # ---------------------------------------------------------
@@ -68,11 +68,11 @@ class Produto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, nullable=False)
-    pontos = Column(Integer, nullable=False)
-    familia_id = Column(Integer, ForeignKey("familias.id"))
+    pontos = Column(Float, nullable=False)
+    familia_id = Column(Integer, ForeignKey("familias.id", ondelete="CASCADE"))
 
     familia = relationship("Familia", back_populates="produtos")
-    registos = relationship("Registo", back_populates="produto")
+    registos = relationship("Registo", back_populates="produto", cascade="all, delete")
 
 
 # ---------------------------------------------------------
@@ -82,11 +82,11 @@ class Registo(Base):
     __tablename__ = "registos"
 
     id = Column(Integer, primary_key=True, index=True)
-    lojista_id = Column(Integer, ForeignKey("lojistas.id"))
-    loja_id = Column(Integer, ForeignKey("lojas.id"))
-    produto_id = Column(Integer, ForeignKey("produtos.id"))
+    lojista_id = Column(Integer, ForeignKey("lojistas.id", ondelete="CASCADE"))
+    loja_id = Column(Integer, ForeignKey("lojas.id", ondelete="CASCADE"))
+    produto_id = Column(Integer, ForeignKey("produtos.id", ondelete="CASCADE"))
     quantidade = Column(Integer, nullable=False)
-    pontos_totais = Column(Integer, nullable=False)
+    pontos_totais = Column(Float, nullable=False)
     data = Column(DateTime, default=datetime.utcnow)
 
     lojista = relationship("Lojista", back_populates="registos")
