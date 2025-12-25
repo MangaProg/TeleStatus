@@ -15,7 +15,11 @@ from core.database import get_db
 from core.logic import processar_mensagem, comando_meus_pontos
 from core.models import Familia, Loja, Produto, Lojista
 
-from Bot.menus import menu_admin, menu_user
+from Bot.menus import menu_admin, menu_user 
+from Bot.menus import menu_admin_lojistas
+from Bot.menus import menu_admin_lojas, menu_admin_produtos
+from Bot.menus import menu_admin_relatorios, menu_admin_config
+from Bot.menus import menu_user_produtos, menu_user_pontos
 from Bot.messages import WELCOME_ADMIN, WELCOME_USER
 
 
@@ -134,7 +138,6 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ============================
     # PLACEHOLDERS PARA AÇÕES
-    # (Aqui ligas às tuas funções reais)
     # ============================
     if data == "lojas_add":
         await query.edit_message_text("➕ Criar nova loja (em desenvolvimento)")
@@ -150,10 +153,11 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Se nada corresponder
     await query.edit_message_text("⚠️ Ação não reconhecida.")
-    
+
 # ---------------------------------------------------------
 # /addfamilia
 # ---------------------------------------------------------
+
 async def cmd_addfamilia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
