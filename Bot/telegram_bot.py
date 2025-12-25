@@ -28,9 +28,10 @@ TOKEN = os.getenv("bot_Token")
 # ---------------------------------------------------------
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Olá! Envia-me os teus registos (ex.: 'tv premium 3') que eu trato do resto."
+        "👋 Olá! Envia-me os teus registos com a formatação 'produto quantidade '(ex: TV 1) que eu trato do resto :)" \
+        "\n\n" \
+        "Usa /meuspontos para veres os teus pontos do dia." \
     )
-
 
 # ---------------------------------------------------------
 # /addfamilia
@@ -74,9 +75,7 @@ async def cmd_addproduto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if len(context.args) < 3:
         await update.message.reply_text(
-            "Uso correto: /addproduto \"<nome>\" <pontos> <familia>\n"
-            "Exemplo: /addproduto \"TV PREMIUM\" 10 TV"
-        )
+            "Uso correto: /addproduto <nome> <pontos> <familia>")
         return
 
     nome_produto = context.args[0].upper()
@@ -155,9 +154,7 @@ async def cmd_addlojista(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if len(context.args) < 3:
         await update.message.reply_text(
-            "Uso correto: /addlojista <nome> <telegram_id> <loja>\n"
-            "Exemplo: /addlojista Miguel 123456789 Almada"
-        )
+            "Uso correto: /addlojista <nome> <telegram_id> <loja>")
         return
 
     nome = context.args[0].upper()

@@ -169,7 +169,7 @@ def processar_mensagem(db: Session, telegram_id: str, texto: str):
     # Totais do dia
     totais_por_familia = obter_pontos_do_dia(db, lojista)
 
-    respostas.append(f"\n🏁 Total desta mensagem: {total_msg} pontos")
+    respostas.append(f"\n🏁 Total de pontos da mensagem: {total_msg} pontos")
     respostas.append("\n📅 Total do dia por família:\n")
 
     if not totais_por_familia:
