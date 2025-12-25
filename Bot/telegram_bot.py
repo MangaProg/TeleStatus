@@ -240,6 +240,200 @@ async def cmd_meuid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
     await update.message.reply_text(f"O teu Telegram ID é: {telegram_id}")
 
+# -----------------------------
+# /editlojas
+# -----------------------------
+async def cmd_editlojas(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("❌ Não tens permissão para usar este comando.")
+        return
+
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "Uso correto: /editlojas <nome_atual> <novo_nome>"
+        )
+        return
+
+    nome_atual = context.args[0].upper()
+    novo_nome = " ".join(context.args[1:]).upper()
+
+    with get_db() as db:
+        loja = db.query(Loja).filter(Loja.nome == nome_atual).first()
+
+        if not loja:
+            await update.message.reply_text(f"❌ Loja '{nome_atual}' não encontrada.")
+            return
+
+        loja.nome = novo_nome
+        db.commit()
+
+    await update.message.reply_text(
+        f"✅ Loja atualizada:\nDe: {nome_atual}\nPara: {novo_nome}"
+    )
+
+
+# -----------------------------
+# /editfamilias
+# -----------------------------
+async def cmd_editfamilias(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("❌ Não tens permissão para usar este comando.")
+        return
+
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "Uso correto:\n"
+            "/editfamilias <nome_atual> <novo_nome> [novo_emoji]\n"
+            "/editfamilias <nome_atual> <novo_emoji>"
+        )
+        return
+
+    nome_atual = context.args[0].upper()
+    novo_nome = None
+    novo_emoji = None
+
+    if len(context.args) == 2:
+        if len(context.args[1]) <= 3:
+            novo_emoji = context.args[1]
+        else:
+            novo_nome = context.args[1].upper()
+
+    if len(context.args) == 3:
+        novo_nome = context.args[1].upper()
+        novo_emoji = context.args[2]
+
+    with get_db() as db:
+        familia = db.query(Familia).filter(Familia.nome == nome_atual).first()
+
+        if not familia:
+            await update.message.reply_text(f"❌ Família '{nome_atual}' não encontrada.")
+            return
+
+        if novo_nome:
+            familia.nome = novo_nome
+
+        if novo_emoji:
+            familia.emoji = novo_emoji
+
+        db.commit()
+
+    await update.message.reply_text(
+        f"✅ Família atualizada!\n"
+        f"Nome: {familia.nome}\nEmoji: {familia.emoji}"
+    )
+
+# -----------------------------
+# /editlojista
+# -----------------------------
+async def cmd_editlojista(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("❌ Não tens permissão para usar este comando.")
+        return
+
+    if len(context.args) < 3:
+        await update.message.reply_text(
+            "Uso correto:\n"
+            "/editlojista <telegram_id> nome <novo_nome>\n"
+            "/editlojista <telegram_id> loja <nova_loja>\n"
+            "/editlojista <telegram_id> id <novo_telegram_id>"
+        )
+        return
+
+    telegram_id = context.args[0]
+    campo = context.args[1].lower()
+    valor = " ".join(context.args[2:]).upper()
+
+    with get_db() as db:
+        lojista = db.query(Lojista).filter(Lojista.telegram_id == telegram_id).first()
+
+        if not lojista:
+            await update.message.reply_text(f"❌ Lojista '{telegram_id}' não encontrado.")
+            return
+
+        if campo == "nome":
+            lojista.nome = valor
+
+        elif campo == "loja":
+            loja = db.query(Loja).filter(Loja.nome == valor).first()
+            if not loja:
+                await update.message.reply_text(f"❌ Loja '{valor}' não existe.")
+                return
+            lojista.loja_id = loja.id
+
+        elif campo == "id":
+            if not valor.isdigit():
+                await update.message.reply_text("❌ O novo telegram_id deve ser numérico.")
+                return
+            lojista.telegram_id = valor
+
+        else:
+            await update.message.reply_text("❌ Campo inválido. Usa: nome, loja ou id.")
+            return
+
+        db.commit()
+
+    await update.message.reply_text("✅ Lojista atualizado com sucesso!")
+
+# -----------------------------
+# /editproduto
+# -----------------------------
+async def cmd_editproduto(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("❌ Não tens permissão para usar este comando.")
+        return
+
+    if len(context.args) < 3:
+        await update.message.reply_text(
+            "Uso correto:\n"
+            "/editproduto <produto> nome <novo_nome>\n"
+            "/editproduto <produto> pontos <novo_valor>\n"
+            "/editproduto <produto> familia <nova_familia>"
+        )
+        return
+
+    nome_produto = context.args[0].upper()
+    campo = context.args[1].lower()
+    valor = " ".join(context.args[2:]).upper()
+
+    with get_db() as db:
+        produto = db.query(Produto).filter(Produto.nome == nome_produto).first()
+
+        if not produto:
+            await update.message.reply_text(f"❌ Produto '{nome_produto}' não encontrado.")
+            return
+
+        if campo == "nome":
+            produto.nome = valor
+
+        elif campo == "pontos":
+            try:
+                produto.pontos = float(valor.replace(",", "."))
+            except:
+                await update.message.reply_text("❌ Valor de pontos inválido.")
+                return
+
+        elif campo == "familia":
+            familia = db.query(Familia).filter(Familia.nome == valor).first()
+            if not familia:
+                await update.message.reply_text(f"❌ Família '{valor}' não existe.")
+                return
+            produto.familia_id = familia.id
+
+        else:
+            await update.message.reply_text("❌ Campo inválido. Usa: nome, pontos ou familia.")
+            return
+
+        db.commit()
+
+    await update.message.reply_text("✅ Produto atualizado com sucesso!")
 
 # ---------------------------------------------------------
 # Comando desconhecido
@@ -275,6 +469,10 @@ def main():
     app.add_handler(CommandHandler("addproduto", cmd_addproduto))
     app.add_handler(CommandHandler("addloja", cmd_addloja))
     app.add_handler(CommandHandler("addlojista", cmd_addlojista))
+    app.add_handler(CommandHandler("editlojas", cmd_editlojas))
+    app.add_handler(CommandHandler("editfamilias", cmd_editfamilias))
+    app.add_handler(CommandHandler("editlojista", cmd_editlojista))
+    app.add_handler(CommandHandler("editproduto", cmd_editproduto))
     app.add_handler(CommandHandler("emoji", cmd_emoji))
     app.add_handler(CommandHandler("meuspontos", cmd_meus_pontos))
     app.add_handler(CommandHandler("meuid", cmd_meuid))
