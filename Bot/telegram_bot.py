@@ -14,24 +14,67 @@ from core.database import get_db
 from core.logic import processar_mensagem, comando_meus_pontos
 from core.models import Familia, Loja, Produto, Lojista
 
+from Bot.menus import menu_admin, menu_user
+from Bot.messages import WELCOME_ADMIN, WELCOME_USER
+
+
 # ---------------------------------------------------------
 # Carregar variáveis do ambiente
 # ---------------------------------------------------------
+
 load_dotenv()
 
-ADMIN_IDS = [int(os.getenv("ADMIN_IDS"))]
 TOKEN = os.getenv("bot_Token")
 
+# CORREÇÃO IMPORTANTE
+ADMIN_IDS = list(map(int, os.getenv("ADMIN_IDS", "").split(",")))
 
 # ---------------------------------------------------------
 # /start
 # ---------------------------------------------------------
+
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 Olá! Envia-me os teus registos com a formatação 'produto quantidade '(ex: TV 1) que eu trato do resto :)" \
-        "\n\n" \
-        "Usa /meuspontos para veres os teus pontos do dia." \
-    )
+    user_id = update.effective_user.id
+
+    if user_id in ADMIN_IDS:
+        await update.message.reply_text(
+            WELCOME_ADMIN,
+            reply_markup=menu_admin
+        )
+    else:
+        await update.message.reply_text(
+            WELCOME_USER,
+            reply_markup=menu_user
+        )
+
+# ---------------------------------------------------------
+# CALLBACK HANDLER (botões inline)
+# ---------------------------------------------------------
+
+async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+
+    # ADMIN
+    if data == "admin_lojas":
+        await query.edit_message_text("🏬 Gestão de lojas:\nEscolhe uma opção...")
+    elif data == "admin_produtos":
+        await query.edit_message_text("📦 Gestão de produtos:\nEscolhe uma opção...")
+    elif data == "admin_lojistas":
+        await query.edit_message_text("👥 Gestão de lojistas:\nEscolhe uma opção...")
+    elif data == "admin_relatorios":
+        await query.edit_message_text("📊 Relatórios:\nEscolhe uma opção...")
+    elif data == "admin_config":
+        await query.edit_message_text("⚙️ Configurações do sistema")
+
+    # USER
+    elif data == "user_produtos":
+        await query.edit_message_text("📦 Lista de produtos disponíveis…")
+    elif data == "user_pontos":
+        await query.edit_message_text("📊 Consulta de pontos…")
+
 
 # ---------------------------------------------------------
 # /addfamilia
@@ -141,10 +184,10 @@ async def cmd_addloja(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(f"✅ Loja '{nome_loja}' criada com sucesso.")
 
-
 # ---------------------------------------------------------
 # /addlojista
 # ---------------------------------------------------------
+
 async def cmd_addlojista(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
@@ -443,6 +486,9 @@ def main():
     app.add_handler(CommandHandler("meuspontos", cmd_meus_pontos))
     app.add_handler(CommandHandler("meuid", cmd_meuid))
 
+    # Inline buttons
+    app.add_handler(CallbackQueryHandler(callback_handler))
+
     # Mensagens normais
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, tratar_mensagem))
 
@@ -450,7 +496,6 @@ def main():
     app.add_handler(MessageHandler(filters.COMMAND, cmd_desconhecido))
 
     app.run_polling()
-
 
 if __name__ == "__main__":
     main()
