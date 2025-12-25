@@ -189,38 +189,6 @@ async def cmd_addlojista(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"✅ Lojista '{nome}' adicionado à loja {nome_loja}."
     )
 
-
-# ---------------------------------------------------------
-# /emoji
-# ---------------------------------------------------------
-async def cmd_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-
-    if user_id not in ADMIN_IDS:
-        await update.message.reply_text("❌ Não tens permissão para usar este comando.")
-        return
-
-    if len(context.args) < 2:
-        await update.message.reply_text("Uso correto: /emoji <familia> <emoji>")
-        return
-
-    nome_familia = context.args[0].upper()
-    emoji = context.args[1]
-
-    with get_db() as db:
-        familia = db.query(Familia).filter(Familia.nome == nome_familia).first()
-        if not familia:
-            await update.message.reply_text(f"❌ Família '{nome_familia}' não encontrada.")
-            return
-
-        familia.emoji = emoji
-        db.commit()
-
-    await update.message.reply_text(
-        f"Emoji da família {nome_familia} atualizado para {emoji} com sucesso!"
-    )
-
-
 # ---------------------------------------------------------
 # /meuspontos
 # ---------------------------------------------------------
@@ -232,7 +200,6 @@ async def cmd_meus_pontos(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(resposta)
 
-
 # ---------------------------------------------------------
 # /meuid
 # ---------------------------------------------------------
@@ -241,9 +208,9 @@ async def cmd_meuid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"O teu Telegram ID é: {telegram_id}")
 
 # -----------------------------
-# /editlojas
+# /editloja
 # -----------------------------
-async def cmd_editlojas(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def cmd_editloja(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if user_id not in ADMIN_IDS:
@@ -275,9 +242,9 @@ async def cmd_editlojas(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # -----------------------------
-# /editfamilias
+# /editfamilia
 # -----------------------------
-async def cmd_editfamilias(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def cmd_editfamilia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if user_id not in ADMIN_IDS:
@@ -287,8 +254,8 @@ async def cmd_editfamilias(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
         await update.message.reply_text(
             "Uso correto:\n"
-            "/editfamilias <nome_atual> <novo_nome> [novo_emoji]\n"
-            "/editfamilias <nome_atual> <novo_emoji>"
+            "/editfamilia <nome_atual> <novo_nome> [novo_emoji]\n"
+            "/editfamilia <nome_atual> <novo_emoji>"
         )
         return
 
@@ -469,11 +436,10 @@ def main():
     app.add_handler(CommandHandler("addproduto", cmd_addproduto))
     app.add_handler(CommandHandler("addloja", cmd_addloja))
     app.add_handler(CommandHandler("addlojista", cmd_addlojista))
-    app.add_handler(CommandHandler("editlojas", cmd_editlojas))
-    app.add_handler(CommandHandler("editfamilias", cmd_editfamilias))
+    app.add_handler(CommandHandler("editlojas", cmd_editloja))
+    app.add_handler(CommandHandler("editfamilia", cmd_editfamilia))
     app.add_handler(CommandHandler("editlojista", cmd_editlojista))
     app.add_handler(CommandHandler("editproduto", cmd_editproduto))
-    app.add_handler(CommandHandler("emoji", cmd_emoji))
     app.add_handler(CommandHandler("meuspontos", cmd_meus_pontos))
     app.add_handler(CommandHandler("meuid", cmd_meuid))
 
