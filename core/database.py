@@ -38,3 +38,4 @@ def init_db():
     """
     from core import models  # Import tardio para evitar circular imports
     Base.metadata.create_all(bind=engine)
+    
