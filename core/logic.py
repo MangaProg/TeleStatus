@@ -29,21 +29,41 @@ def validar_mensagem(texto: str):
 
 
 # ---------------------------------------------------------
-# 2. Obter lojista pelo telegram_id
+# 2. Dividir texto em linhas
+# ---------------------------------------------------------
+def parse_linhas(texto: str):
+    """
+    Divide o texto em linhas, ignorando linhas vazias.
+    """
+    return [linha.strip() for linha in texto.split("\n") if linha.strip()]
+
+
+# ---------------------------------------------------------
+# 3. Interpretar uma linha usando validar_mensagem
+# ---------------------------------------------------------
+def interpretar_linha(linha: str):
+    """
+    Interpreta uma linha individual.
+    """
+    return validar_mensagem(linha)
+
+
+# ---------------------------------------------------------
+# 4. Obter lojista pelo telegram_id
 # ---------------------------------------------------------
 def obter_lojista(db: Session, telegram_id: str):
     return db.query(Lojista).filter(Lojista.telegram_id == telegram_id).first()
 
 
 # ---------------------------------------------------------
-# 3. Obter produto pelo nome
+# 5. Obter produto pelo nome
 # ---------------------------------------------------------
 def obter_produto(db: Session, nome_produto: str):
     return db.query(Produto).filter(Produto.nome == nome_produto).first()
 
 
 # ---------------------------------------------------------
-# 4. Criar registo na base de dados
+# 6. Criar registo na base de dados
 # ---------------------------------------------------------
 def criar_registo(db: Session, lojista: Lojista, produto: Produto, quantidade: int):
     pontos_totais = produto.pontos * quantidade
@@ -64,14 +84,15 @@ def criar_registo(db: Session, lojista: Lojista, produto: Produto, quantidade: i
 
 
 # ---------------------------------------------------------
-# 5. Função principal que processa uma mensagem
+# 7. Função principal que processa a mensagem
 # ---------------------------------------------------------
-
 def processar_mensagem(db: Session, telegram_id: str, texto: str):
+    # Verificar se o lojista existe
     lojista = obter_lojista(db, telegram_id)
     if not lojista:
         return "❌ Não estás registado no sistema. Contacta o administrador."
 
+    # Dividir em linhas
     linhas = parse_linhas(texto)
 
     respostas = []
