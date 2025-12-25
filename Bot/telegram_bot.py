@@ -3,6 +3,7 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
+    CallbackQueryHandler,
     ContextTypes,
     filters
 )
@@ -50,32 +51,106 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ---------------------------------------------------------
 # CALLBACK HANDLER (botões inline)
 # ---------------------------------------------------------
-
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     data = query.data
 
-    # ADMIN
+    # ============================
+    # ADMIN – MENU PRINCIPAL
+    # ============================
     if data == "admin_lojas":
-        await query.edit_message_text("🏬 Gestão de lojas:\nEscolhe uma opção...")
-    elif data == "admin_produtos":
-        await query.edit_message_text("📦 Gestão de produtos:\nEscolhe uma opção...")
-    elif data == "admin_lojistas":
-        await query.edit_message_text("👥 Gestão de lojistas:\nEscolhe uma opção...")
-    elif data == "admin_relatorios":
-        await query.edit_message_text("📊 Relatórios:\nEscolhe uma opção...")
-    elif data == "admin_config":
-        await query.edit_message_text("⚙️ Configurações do sistema")
+        await query.edit_message_text(
+            "🏬 Gestão de lojas:\nEscolhe uma opção:",
+            reply_markup=menu_admin_lojas
+        )
+        return
 
-    # USER
-    elif data == "user_produtos":
-        await query.edit_message_text("📦 Lista de produtos disponíveis…")
-    elif data == "user_pontos":
-        await query.edit_message_text("📊 Consulta de pontos…")
+    if data == "admin_produtos":
+        await query.edit_message_text(
+            "📦 Gestão de produtos:\nEscolhe uma opção:",
+            reply_markup=menu_admin_produtos
+        )
+        return
 
+    if data == "admin_lojistas":
+        await query.edit_message_text(
+            "👥 Gestão de lojistas:\nEscolhe uma opção:",
+            reply_markup=menu_admin_lojistas
+        )
+        return
 
+    if data == "admin_relatorios":
+        await query.edit_message_text(
+            "📊 Relatórios disponíveis:",
+            reply_markup=menu_admin_relatorios
+        )
+        return
+
+    if data == "admin_config":
+        await query.edit_message_text(
+            "⚙️ Configurações do sistema:",
+            reply_markup=menu_admin_config
+        )
+        return
+
+    # ============================
+    # USER – MENU PRINCIPAL
+    # ============================
+    if data == "user_produtos":
+        await query.edit_message_text(
+            "📦 Lista de produtos disponíveis…",
+            reply_markup=menu_user_produtos
+        )
+        return
+
+    if data == "user_pontos":
+        await query.edit_message_text(
+            "📊 Consulta de pontos…",
+            reply_markup=menu_user_pontos
+        )
+        return
+
+    # ============================
+    # BOTÃO VOLTAR (ADMIN)
+    # ============================
+    if data == "admin_back":
+        await query.edit_message_text(
+            WELCOME_ADMIN,
+            reply_markup=menu_admin
+        )
+        return
+
+    # ============================
+    # BOTÃO VOLTAR (USER)
+    # ============================
+    if data == "user_back":
+        await query.edit_message_text(
+            WELCOME_USER,
+            reply_markup=menu_user
+        )
+        return
+
+    # ============================
+    # PLACEHOLDERS PARA AÇÕES
+    # (Aqui ligas às tuas funções reais)
+    # ============================
+    if data == "lojas_add":
+        await query.edit_message_text("➕ Criar nova loja (em desenvolvimento)")
+        return
+
+    if data == "lojas_edit":
+        await query.edit_message_text("✏️ Editar loja (em desenvolvimento)")
+        return
+
+    if data == "lojas_remove":
+        await query.edit_message_text("❌ Remover loja (em desenvolvimento)")
+        return
+
+    # Se nada corresponder
+    await query.edit_message_text("⚠️ Ação não reconhecida.")
+    
 # ---------------------------------------------------------
 # /addfamilia
 # ---------------------------------------------------------
