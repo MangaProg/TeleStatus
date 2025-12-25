@@ -55,6 +55,7 @@ class Familia(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, nullable=False)
+    emoji = Column(String, nullable=True)  # NOVO CAMPO
 
     produtos = relationship("Produto", back_populates="familia")
 
