@@ -29,7 +29,7 @@ ADMIN_ACTION_ERROR = """
 WELCOME_USER = """
 👋 Olá, {first_name}!
 
-Bem-vindo ao sistema de pontos.
+Bem-vindo ao sistema de status.
 Escolhe uma das opções abaixo para consultar informações.
 """
 
