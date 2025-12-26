@@ -8,6 +8,7 @@ from telegram.ext import (
     filters
 )
 
+from config import ADMIN_IDS
 import os
 from dotenv import load_dotenv
 
