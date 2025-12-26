@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, timezone
 
 from core.models import Lojista, Produto, Registo
 
@@ -44,7 +44,7 @@ def interpretar_linha(linha: str):
 # ---------------------------------------------------------
 # Acesso à base de dados
 # ---------------------------------------------------------
-def obter_lojista(db: Session, telegram_id: str):
+def obter_lojista(db: Session, telegram_id: int):
     return db.query(Lojista).filter(Lojista.telegram_id == telegram_id).first()
 
 
@@ -74,8 +74,9 @@ def criar_registo(db: Session, lojista: Lojista, produto: Produto, quantidade: i
 # Cálculo de pontos
 # ---------------------------------------------------------
 def obter_pontos_do_dia(db: Session, lojista: Lojista):
-    """Devolve um dicionário com totais por família para o dia atual."""
-    hoje = datetime.now().date()
+    hoje = datetime.now(timezone.utc)
+
+
 
     registos_dia = (
         db.query(Registo)
@@ -139,8 +140,13 @@ def processar_mensagem(db: Session, telegram_id: str, texto: str):
         return "❌ Não estás registado no sistema. Contacta o administrador."
 
     linhas = parse_linhas(texto)
+
+    if len(linhas) > 20:
+        return "❌ Máximo de 20 linhas por mensagem."
+
     respostas = []
     total_msg = 0
+
 
     # Processar cada linha
     for linha in linhas:

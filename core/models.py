@@ -40,7 +40,7 @@ class Lojista(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, nullable=False)
-    telegram_id = Column(String, unique=True, nullable=False)
+    telegram_id = Column(Integer, unique=True, nullable=False)
     loja_id = Column(Integer, ForeignKey("lojas.id", ondelete="CASCADE"))
 
     loja = relationship("Loja", back_populates="lojistas")
