@@ -8,7 +8,7 @@ from telegram.ext import (
     filters
 )
 
-from config import ADMIN_IDS
+from config import BOT_TOKEN, ADMIN_IDS
 import os
 from dotenv import load_dotenv
 
@@ -28,12 +28,7 @@ from Bot.messages import WELCOME_ADMIN, WELCOME_USER
 # Carregar variáveis do ambiente
 # ---------------------------------------------------------
 
-load_dotenv()
-
-TOKEN = os.getenv("bot_Token")
-
-# CORREÇÃO IMPORTANTE
-ADMIN_IDS = list(map(int, os.getenv("ADMIN_IDS", "").split(",")))
+TOKEN = BOT_TOKEN
 
 # ---------------------------------------------------------
 # /start

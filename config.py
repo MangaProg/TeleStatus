@@ -11,7 +11,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip().isdigit()]
 
 #URL da base de dados
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite://database.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///database.db")
 
 #Ambiente
 ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
