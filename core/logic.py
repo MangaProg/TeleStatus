@@ -6,7 +6,7 @@ from core.models import Lojista, Produto, Registo
 
 
 # ---------------------------------------------------------
-# 1. Parsing e validação
+# Parsing e validação
 # ---------------------------------------------------------
 def validar_mensagem(texto: str):
     """
@@ -42,7 +42,7 @@ def interpretar_linha(linha: str):
 
 
 # ---------------------------------------------------------
-# 2. Acesso à base de dados
+# Acesso à base de dados
 # ---------------------------------------------------------
 def obter_lojista(db: Session, telegram_id: str):
     return db.query(Lojista).filter(Lojista.telegram_id == telegram_id).first()
@@ -71,7 +71,7 @@ def criar_registo(db: Session, lojista: Lojista, produto: Produto, quantidade: i
 
 
 # ---------------------------------------------------------
-# 3. Cálculo de pontos
+# Cálculo de pontos
 # ---------------------------------------------------------
 def obter_pontos_do_dia(db: Session, lojista: Lojista):
     """Devolve um dicionário com totais por família para o dia atual."""
@@ -102,7 +102,7 @@ def obter_pontos_do_dia(db: Session, lojista: Lojista):
 
 
 # ---------------------------------------------------------
-# 4. Comando /meuspontos
+# Comando /meuspontos
 # ---------------------------------------------------------
 def comando_meus_pontos(db: Session, telegram_id: str):
     lojista = obter_lojista(db, telegram_id)
@@ -131,7 +131,7 @@ def comando_meus_pontos(db: Session, telegram_id: str):
 
 
 # ---------------------------------------------------------
-# 5. Função principal: processar mensagem normal
+# Função principal: processar mensagem normal
 # ---------------------------------------------------------
 def processar_mensagem(db: Session, telegram_id: str, texto: str):
     lojista = obter_lojista(db, telegram_id)
