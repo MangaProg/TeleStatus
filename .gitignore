@@ -18,3 +18,7 @@ Thumbs.db
 
 # Ficheiros de configuração sensíveis
 .env
+
+# Base de dados SQLite Local
+database.db
+*.db
