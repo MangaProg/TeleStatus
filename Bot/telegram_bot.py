@@ -11,6 +11,8 @@ from telegram.ext import (
 from config import BOT_TOKEN, ADMIN_IDS
 from core.database import get_db
 from core.logic import processar_mensagem, comando_meus_pontos
+
+# Menus
 from Bot.menus import (
     menu_admin,
     menu_user,
@@ -22,11 +24,16 @@ from Bot.menus import (
     menu_user_produtos,
     menu_user_pontos,
 )
+
+# Mensagens
 from Bot.messages import (
-    WELCOME_ADMIN,
+    WELCOME_ADMIN,  # podes manter se ainda for útil no futuro
     WELCOME_USER,
-    ADMIN_ONLY,
 )
+
+# Handlers modularizados
+from Bot.handlers_admin import register_admin_handlers
+
 
 # =========================================================
 # FUNÇÃO AUXILIAR: VERIFICAR ADMIN
@@ -36,22 +43,16 @@ def is_admin(user_id: int) -> bool:
 
 
 # =========================================================
-# COMANDO /start
+# COMANDO /start (sempre como user normal)
 # =========================================================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    first_name = update.message.from_user.first_name
+    user = update.message.from_user
+    first_name = user.first_name
 
-    if is_admin(user_id):
-        await update.message.reply_text(
-            WELCOME_ADMIN.format(first_name=first_name),
-            reply_markup=menu_admin
-        )
-    else:
-        await update.message.reply_text(
-            WELCOME_USER.format(first_name=first_name),
-            reply_markup=menu_user
-        )
+    await update.message.reply_text(
+        WELCOME_USER.format(first_name=first_name),
+        reply_markup=menu_user,
+    )
 
 
 # =========================================================
@@ -75,21 +76,23 @@ async def meuid(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # =========================================================
-# CALLBACK HANDLER (CORRIGIDO)
+# CALLBACK HANDLER (menus admin + user)
 # =========================================================
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    user_id = query.from_user.id
-    first_name = query.from_user.first_name
+    user = query.from_user
+    first_name = user.first_name
 
     await query.answer()
 
     # -------------------------------
-    # VERIFICAÇÃO DE PERMISSÕES
+    # VERIFICAÇÃO DE PERMISSÕES (ÁREA ADMIN)
     # -------------------------------
     if query.data.startswith(("admin_", "lojas_", "produtos_", "lojistas_", "relatorio_", "config_")):
-        if not is_admin(user_id):
-            await query.edit_message_text(f"❌ {first_name}, não tens permissão para usar esta opção.")
+        if not is_admin(user.id):
+            await query.edit_message_text(
+                f"❌ {first_name}, não tens permissão para usar esta opção."
+            )
             return
 
     # -------------------------------
@@ -142,14 +145,20 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # -------------------------------
-    # BOTÃO VOLTAR
+    # BOTÕES VOLTAR
     # -------------------------------
     if query.data == "admin_back":
-        await query.edit_message_text(f"👋 Olá, {first_name}!\nEscolhe uma opção:", reply_markup=menu_admin)
+        await query.edit_message_text(
+            f"👋 Olá, {first_name}!\nEscolhe uma opção:",
+            reply_markup=menu_admin,
+        )
         return
 
     if query.data == "user_back":
-        await query.edit_message_text(f"👋 Olá, {first_name}!\nEscolhe uma opção:", reply_markup=menu_user)
+        await query.edit_message_text(
+            f"👋 Olá, {first_name}!\nEscolhe uma opção:",
+            reply_markup=menu_user,
+        )
         return
 
     # -------------------------------
@@ -178,6 +187,9 @@ async def tratar_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # =========================================================
 def iniciar_bot():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Handlers modularizados
+    register_admin_handlers(app)
 
     # Comandos
     app.add_handler(CommandHandler("start", start))

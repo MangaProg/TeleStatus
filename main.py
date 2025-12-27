@@ -1,5 +1,3 @@
-# main.py
-
 import os
 from core.database import init_db
 from Bot.telegram_bot import iniciar_bot
