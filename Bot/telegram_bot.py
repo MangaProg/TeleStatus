@@ -3,12 +3,11 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
-    CallbackQueryHandler,
     ContextTypes,
     filters,
 )
 
-from config import BOT_TOKEN, ADMIN_IDS
+from config import BOT_TOKEN
 from core.database import get_db
 from core.logic import processar_mensagem, comando_meus_pontos
 
@@ -21,13 +20,7 @@ from Bot.messages import WELCOME_USER
 # Handlers modularizados
 from Bot.handlers_admin import register_admin_handlers
 from Bot.handlers_user import register_user_handlers
-
-
-# =========================================================
-# FUNÇÃO AUXILIAR: VERIFICAR ADMIN
-# =========================================================
-def is_admin(user_id: int) -> bool:
-    return user_id in ADMIN_IDS
+from Bot.handlers_callbacks import register_generic_callbacks
 
 
 # =========================================================
@@ -85,6 +78,7 @@ def iniciar_bot():
     # Handlers modularizados
     register_admin_handlers(app)
     register_user_handlers(app)
+    register_generic_callbacks(app)
 
     # Comandos
     app.add_handler(CommandHandler("start", start))
