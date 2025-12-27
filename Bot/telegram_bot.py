@@ -35,7 +35,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=menu_user,
     )
 
-
 # =========================================================
 # COMANDO /meuspontos
 # =========================================================
@@ -47,14 +46,12 @@ async def meuspontos(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(resposta)
 
-
 # =========================================================
 # COMANDO /meuid
 # =========================================================
 async def meuid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.message.from_user.id
     await update.message.reply_text(f"O teu Telegram ID é: {telegram_id}")
-
 
 # =========================================================
 # MENSAGENS NORMAIS (REGISTO DE PONTOS)
@@ -67,7 +64,6 @@ async def tratar_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resposta = processar_mensagem(db, telegram_id, texto)
 
     await update.message.reply_text(resposta)
-
 
 # =========================================================
 # MAIN
