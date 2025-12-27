@@ -3,11 +3,13 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from Bot.menus import (
+# Menus modularizados
+from Bot.menus.user_menus import (
     menu_user,
     menu_user_produtos,
     menu_user_pontos,
 )
+
 
 # =========================================================
 # MENU PRINCIPAL DO UTILIZADOR
