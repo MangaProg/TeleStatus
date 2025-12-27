@@ -5,7 +5,9 @@ from telegram.ext import (
 )
 
 from config import ADMIN_IDS
-from Bot.menus import menu_admin
+
+# Menus de administração (modularizados)
+from Bot.menus.admin_menus import menu_admin
 
 __all__ = ["register_admin_handlers"]
 

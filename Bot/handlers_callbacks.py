@@ -3,15 +3,17 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from Bot.menus import (
+# Menus modularizados
+from Bot.menus.admin_menus import (
     menu_admin,
-    menu_user,
     menu_admin_lojas,
     menu_admin_produtos,
     menu_admin_lojistas,
     menu_admin_relatorios,
     menu_admin_config,
 )
+
+from Bot.menus.user_menus import menu_user
 
 from config import ADMIN_IDS
 
