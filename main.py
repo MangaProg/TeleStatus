@@ -2,7 +2,7 @@
 
 import os
 from core.database import init_db
-from Bot.telegram_bot import main as start_bot
+from Bot.telegram_bot import iniciar_bot
 from config import DATABASE_URL
 
 def database_exists() -> bool:
@@ -25,4 +25,5 @@ if __name__ == "__main__":
     else:
         print("Base de dados já existente. A iniciar o bot...")
 
-    start_bot()
+    iniciar_bot()
+    print("Bot Telegram iniciado com sucesso!")

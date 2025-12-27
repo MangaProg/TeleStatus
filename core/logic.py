@@ -74,9 +74,8 @@ def criar_registo(db: Session, lojista: Lojista, produto: Produto, quantidade: i
 # Cálculo de pontos
 # ---------------------------------------------------------
 def obter_pontos_do_dia(db: Session, lojista: Lojista):
-    hoje = datetime.now(timezone.utc)
-
-
+    # Obtemos apenas a data atual (UTC) sem horas
+    hoje = datetime.now(timezone.utc).date()
 
     registos_dia = (
         db.query(Registo)
